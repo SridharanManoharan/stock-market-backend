@@ -96,7 +96,7 @@ describe('Stocks', () => {
         });
     });
 
-    describe('/POST Record a treat', () => {
+    describe('/POST Record a trade', () => {
         it('it should ADD a trade to DB', (done) => {
         let stock = {
             "sharesQuantity": 10, 
@@ -115,6 +115,19 @@ describe('Stocks', () => {
                     res.body.should.have.property('tradePrice');
                     res.body.should.have.property('tradeType');
                     res.body.should.have.property('createdAt');
+                done();
+            });
+        });
+    });
+
+    describe('/GET all trade record', () => {
+        it('it should GET all trade from DB', (done) => {
+        chai.request(server)
+            .get('/customer-api/browser/stock/trade')
+            .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('trade');
                 done();
             });
         });

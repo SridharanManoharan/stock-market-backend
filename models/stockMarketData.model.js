@@ -54,6 +54,12 @@ function recordTrade(newTrade) {
     });
 }
 
+function getTrade() {
+    return new Promise((resolve, reject) => {
+        resolve({'trade': data.tradeRecord});
+    });
+}
+
 function getTradeInLastMinutes(stockSymbol) {
     return new Promise((resolve, reject) => {
         const date = helper.newDate() - (15*60*1000);
@@ -105,5 +111,6 @@ module.exports = {
     getGBCE, 
     getPERatio,
     getDividend,
+    getTrade,
     getVolWeighedPrice
 }

@@ -94,4 +94,18 @@ router.post('/trade', m.checkFieldsTrade, async (req, res) => {
     })
 });
 
+router.get('/trade', async (req, res) => {
+    await stockMarketData.getTrade()
+    .then(trade => {
+        return res.status(200).json(trade);
+    })
+    .catch(err => {
+        if (err.status) {
+            res.status(err.status).json({ message: err.message })
+        } else {
+            res.status(500).json({ message: err.message })
+        }
+    })
+});
+
 module.exports = router;
