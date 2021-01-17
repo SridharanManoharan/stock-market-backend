@@ -1,0 +1,40 @@
+{
+    "stockMarketData": [   
+        {
+            "stockSymbol": "TEA",
+            "type": "Common",
+            "lastDividend": 0,
+            "fixedDividend": 0,
+            "parValue": 100
+        },
+        {
+            "stockSymbol": "POP",
+            "type": "Common",
+            "lastDividend": 8,
+            "fixedDividend": 0,
+            "parValue": 100 
+        },
+        {
+            "stockSymbol": "ALE",
+            "type": "Common",
+            "lastDividend": 23,
+            "fixedDividend": 0,
+            "parValue": 60
+        },
+        {
+            "stockSymbol": "GIN",
+            "type": "Preferred",
+            "lastDividend": 8,
+            "fixedDividend": 2,
+            "parValue": 100 
+        },
+        {
+            "stockSymbol": "JOE",
+            "type": "Common",
+            "lastDividend": 13,
+            "fixedDividend": 0,
+            "parValue": 250 
+        }
+    ],
+    "tradeRecord": []
+}
