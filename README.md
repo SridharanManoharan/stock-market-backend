@@ -93,10 +93,10 @@ npm run start
     "vwprice": Number
 }
 
-## To get volume weighted price
+## To get GBCE All Share Index
 | URL - GET                                                      |
 | -------------------------------------------------------------- |
-| http://localhost:9000//customer-api/browser/stock/gbce      |
+| http://localhost:9000//customer-api/browser/stock/gbce         |
 
 ## Response
 {
