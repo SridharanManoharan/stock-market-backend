@@ -63,11 +63,11 @@ function getTrade() {
 function getTradeInLastMinutes(stockSymbol) {
     return new Promise((resolve, reject) => {
         const date = helper.newDate() - (15*60*1000);
-        let obj = [];
+        let obj = {};
         if(data.tradeRecord.length > 0){
-            obj = data.tradeRecord.filter(elem => Date.parse(elem.createdAt) >= date && elem.stockSymbol === stockSymbol);
+            obj['trade'] = data.tradeRecord.filter(elem => elem.symbol === stockSymbol && Date.parse(elem.createdAt) <= date);
         }
-        resolve({'trade': obj});
+        resolve(obj);
     });
 }
 
@@ -77,11 +77,11 @@ function getVolWeighedPrice(stockSymbol) {
         let volWeightedPrice = 0;
         let quantity = 0;
         if(obj.trade.length > 0) {
-            obj.map(elem => {
+            obj.trade.map(elem => {
                 quantity += elem.sharesQuantity;
                 volWeightedPrice += elem.tradePrice * elem.sharesQuantity;
             });
-            volWeightedPrice = await volWeightedPrice/quantity;
+            volWeightedPrice = volWeightedPrice/quantity;
         }
         resolve({
             'stockSymbol': stockSymbol,
@@ -92,7 +92,7 @@ function getVolWeighedPrice(stockSymbol) {
 
 function getGBCE() {
     return new Promise((resolve, reject) => {
-        let productPrice = 0;
+        let productPrice = 1;
         let gbce = 0;
         const numberOfTrade = data.tradeRecord.length;
         data.tradeRecord.map(elem => {
