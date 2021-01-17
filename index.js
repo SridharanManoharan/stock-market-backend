@@ -21,4 +21,8 @@ app.get('/', (req, res) => {
 })
 
 // Starting server
-app.listen('9000')
+const server = app.listen(9000, function(){
+    console.log("API en cours d'exécution sur le port 9000");
+}); 
+
+module.exports = server;

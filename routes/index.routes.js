@@ -82,8 +82,8 @@ router.get('/gbce', async (req, res) => {
 /* Record a trade with timestamp */
 router.post('/trade', m.checkFieldsTrade, async (req, res) => {
     await stockMarketData.recordTrade(req.body)
-    .then(gbce => {
-        return res.status(200).json(gbce);
+    .then(trade => {
+        return res.status(201).json(trade);
     })
     .catch(err => {
         if (err.status) {
