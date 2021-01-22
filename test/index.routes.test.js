@@ -7,11 +7,22 @@ let chaiHttp = require('chai-http');
 let server = require('../index.js');
 let should = chai.should();
 
+const filename = '../data/stockMarketData.json';
+let data = require(filename);
+const helper = require('../helpers/helper.js');
+
 chai.use(chaiHttp);
 /*
 * Test the /GET route
 */
 describe('Stocks', () => {
+
+    beforeEach(() => {
+        while (data.tradeRecord.length) {
+            data.tradeRecord.pop();
+        }
+        helper.writeJSONFile(filename, data);
+    });
 
     describe('/GET stock', () => {
         it('it should GET all the stock data', (done) => {
@@ -76,8 +87,6 @@ describe('Stocks', () => {
             .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('stockSymbol');
-                    res.body.should.have.property('vwprice');
                 done();
             });
         });

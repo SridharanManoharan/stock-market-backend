@@ -18,30 +18,44 @@ function getStock() {
 
 function getDividend(stockSymbol, stockPrice) {
     return new Promise(async (resolve, reject) => {
-        const selectedStock = await helper.mustBeInArray(data.stockMarketData, stockSymbol);
-        let calculatedValue = 0;
-        if(selectedStock['type'].toLowerCase() === 'common') {
-            calculatedValue = await selectedStock.lastDividend / stockPrice;
-        } else if (selectedStock['type'].toLowerCase() === 'preferred') {
-            calculatedValue = await selectedStock.fixedDividend * selectedStock.parValue / stockPrice;
-        }        
-        resolve({
-            'stockSymbol': stockSymbol,
-            'stockPrice': stockPrice,
-            'value': calculatedValue
-        });
+        try{
+            const selectedStock = await helper.mustBeInArray(data.stockMarketData, stockSymbol);
+            let calculatedValue = 0;
+            if(selectedStock['type'].toLowerCase() === 'common') {
+                calculatedValue = await selectedStock.lastDividend / stockPrice;
+            } else if (selectedStock['type'].toLowerCase() === 'preferred') {
+                calculatedValue = await (selectedStock.fixedDividend * selectedStock.parValue )/ stockPrice;
+            }        
+            resolve({
+                'stockSymbol': stockSymbol,
+                'stockPrice': stockPrice,
+                'value': calculatedValue
+            });
+        } catch(error) {
+            reject({
+                message: error,
+                status: 200
+            });
+        }
     });
 }
 
 function getPERatio(stockSymbol, stockPrice) {
     return new Promise(async (resolve, reject) => {
-        const dividend = await getDividend(stockSymbol, stockPrice);
-        const calculatedValue = await (stockPrice / dividend.value);
-        resolve({
-            'stockSymbol': stockSymbol,
-            'stockPrice': stockPrice,
-            'value': calculatedValue});
-        });
+        try {
+            const dividend = await getDividend(stockSymbol, stockPrice);
+            const calculatedValue = await stockPrice / dividend.value;
+            resolve({
+                'stockSymbol': stockSymbol,
+                'stockPrice': stockPrice,
+                'value': calculatedValue});
+        } catch(error) {
+            reject({
+                message: error,
+                status: 200
+            });
+        }
+    });
 }
 
 function recordTrade(newTrade) {
@@ -65,7 +79,7 @@ function getTradeInLastMinutes(stockSymbol) {
         const date = helper.newDate() - (15*60*1000);
         let obj = {};
         if(data.tradeRecord.length > 0){
-            obj['trade'] = data.tradeRecord.filter(elem => elem.symbol === stockSymbol && Date.parse(elem.createdAt) <= date);
+            obj['trade'] = data.tradeRecord.filter(elem => (elem.symbol === stockSymbol && new Date(elem.createdAt) >= date));
         }
         resolve(obj);
     });
@@ -73,32 +87,41 @@ function getTradeInLastMinutes(stockSymbol) {
 
 function getVolWeighedPrice(stockSymbol) {
     return new Promise(async (resolve, reject) => {
-        const obj = await getTradeInLastMinutes(stockSymbol);
-        let volWeightedPrice = 0;
-        let quantity = 0;
-        if(obj.trade.length > 0) {
-            obj.trade.map(elem => {
-                quantity += elem.sharesQuantity;
-                volWeightedPrice += elem.tradePrice * elem.sharesQuantity;
+        try {
+            const obj = await getTradeInLastMinutes(stockSymbol);
+            let volWeightedPrice = 0;
+            let quantity = 0;
+            if(obj.trade.length > 0) {
+                obj.trade.map(elem => {
+                    quantity += elem.sharesQuantity;
+                    volWeightedPrice += elem.tradePrice * elem.sharesQuantity;
+                });
+                volWeightedPrice = volWeightedPrice/quantity;
+            }
+            resolve({
+                'stockSymbol': stockSymbol,
+                'vwprice': volWeightedPrice
             });
-            volWeightedPrice = volWeightedPrice/quantity;
+        } catch (error) {
+            reject({
+                message: error,
+                status: 200
+            });
         }
-        resolve({
-            'stockSymbol': stockSymbol,
-            'vwprice': volWeightedPrice
-        });
     });
 }
 
 function getGBCE() {
     return new Promise((resolve, reject) => {
-        let productPrice = 1;
-        let gbce = 0;
+        let gbce = 0.0;
         const numberOfTrade = data.tradeRecord.length;
-        data.tradeRecord.map(elem => {
-            productPrice *= elem.tradePrice;
-        });
-        gbce = Math.pow(productPrice, 1/numberOfTrade);
+        if(data.tradeRecord && numberOfTrade !=0) {
+            let productPrice = 1.0;
+            data.tradeRecord.map(elem => {
+                productPrice *= elem.tradePrice;
+            });
+            gbce = Math.pow(productPrice, 1.0/numberOfTrade);
+        }
         resolve({
             'gbce': gbce
         });
